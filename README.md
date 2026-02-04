@@ -11,9 +11,10 @@ Une description claire et concise (5-10 lignes) de votre projet.
 
 ## 👥 L'Équipe
 
-- **HERVET Simon** (@) : Responsable [ex: Algorithmique & Logique]
+- **HERVET Simon** (@simonhervet349-ai) : Responsable [ex: Algorithmique & Logique]
 - **Danede Evan** (@evandanede) : Responsable [ex: Interface Graphique & Assets]
 - **ATTANASIO Alexandre** (@Mouvox) : Responsable [ex: Gestion des données & Documentation]
+- **MBOM Ralph** (@Ralphmmob) : Responsable [ex: Interface Graphique & Assets]
 
 ## 🛠️ Aspects Techniques (Spécificités NSI)
 

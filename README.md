@@ -3,7 +3,8 @@
 
 ## 📝 Description
 
-Une description claire et concise (5-10 lignes) de votre projet.
+L'idée est de créer une application faisant un mélange entre une application de course et un jeux.
+l'utilisateur crée un compte et autoriser l'application à avoir accès à sa localisation
 
 - Quel est l'objectif ?
 - Pourquoi avez-vous choisi ce sujet ?

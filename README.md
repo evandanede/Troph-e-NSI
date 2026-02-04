@@ -11,9 +11,9 @@ Une description claire et concise (5-10 lignes) de votre projet.
 
 ## 👥 L'Équipe
 
-- **Nom Prénom** (@pseudo_git) : Responsable [ex: Algorithmique & Logique]
-- **Nom Prénom** (@pseudo_git) : Responsable [ex: Interface Graphique & Assets]
-- **Nom Prénom** (@pseudo_git) : Responsable [ex: Gestion des données & Documentation]
+- **HERVET Simon** (@) : Responsable [ex: Algorithmique & Logique]
+- **Danede Evan** (@evandanede) : Responsable [ex: Interface Graphique & Assets]
+- **ATTANASIO Alexandre** (@Mouvox) : Responsable [ex: Gestion des données & Documentation]
 
 ## 🛠️ Aspects Techniques (Spécificités NSI)
 

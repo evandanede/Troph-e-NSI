@@ -1,14 +1,24 @@
 # Troph-e-NSI[readme.md](https://github.com/user-attachments/files/25067865/readme.md)
-# 🚀 Nom de votre Projet
+# 🚀 Nom du Projet encore à définir
 
 ## 📝 Description
 
 L'idée est de créer une application faisant un mélange entre une application de course et un jeux.
-l'utilisateur crée un compte et autoriser l'application à avoir accès à sa localisation
+L'utilisateur cours, marche dans la ville de Montpellier et son agglomération.
+Le but du sportif va d'être d'obtenir le plus de "zone" "périmetre" "espace" dans la ville.
+Pour ça il faut que le coureur fasse le tour de la zone qu'il veut gagner (ou à peu près en fonction de l'organisation des espaces)
+et sur l'application il sera alors propriétaire de cette zone qui sera entouré d'une certaine couleur.
+Le but est de gagner un maximum d'espace de la ville mais attention, si un autre coureur (coureur2) passe sur la zone remporter par un autre(coureur1),
+celle ci appartient désormais à coureur2.
+L'objectif est de motiver les utilisateurs à faire une activité physique et de découvrir aussi de nouveaux endroits ou paysages jamais explorer.
 
-- Quel est l'objectif ?
-- Pourquoi avez-vous choisi ce sujet ?
-- En quoi répond-il aux critères d'originalité ou d'utilité des Trophées NSI ?
+Nous avons choisi ce sujet car nous aimons tous dans notre groupe le sport et les jeux donc cette idée nous permets de rassembler deux de nos centres d'interêts
+utiles pour tout le monde.
+
+On pense que ce projet répond aux critères d'originalité et d'utilité des Trophées NSI car ce genre d'application n'existe pas (en tout cas rien de connu)
+et que cela peut avoir une vraie utilité pour des gens qui pourrait avoir du mal à se motiver pour faire une activité physique, cette application ajoute
+un réel challenge et un véritable interêts à bouger.
+
 
 ## 👥 L'Équipe
 

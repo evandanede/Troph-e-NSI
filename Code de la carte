@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Cercle Montpellier - Running</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  body { margin: 0; }
+  #map { height: 100vh; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // 1. CARTE DE BASE 
+  var map = L.map('map').setView([43.611, 3.877], 9);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // 2. L'EFFET GRISÉ VERT
+  // On crée un rectangle immense et on fait un "trou" au milieu
+  var center = [43.611, 3.877];
+  var radius = 50000; // 50km
+  
+  var pointsCercle = [];
+  for (var i = 0; i <= 360; i++) {
+    var angle = (i * Math.PI) / 180;
+    var dx = (radius / 111320) * Math.cos(angle);
+    var dy = (radius / (111320 * Math.cos(center[0] * Math.PI / 180))) * Math.sin(angle);
+    pointsCercle.push([center[0] + dx, center[1] + dy]);
+  }
+
+  L.polygon([
+    [[-90, -180], [90, -180], [90, 180], [-90, 180]], // Le monde entier
+    pointsCercle // Le trou pour Montpellier
+  ], {
+    color: 'none',
+    fillColor: 'green',
+    fillOpacity: 0.25
+  }).addTo(map);
+
+  // 3. TON CERCLE BLEU D'ORIGINE
+  var cercle = L.circle([43.611, 3.877], {
+    color: "#0033cc",
+    fillOpacity: 0,
+    radius: 50000
+  }).addTo(map).bindPopup("Cercle autour de Montpellier (~50 km)");
+
+  // 4. TES MARQUEURS D'ORIGINE (Tous conservés)
+  L.marker([43.611, 3.877]).addTo(map).bindPopup("Montpellier");
+  L.marker([43.733, 3.317]).addTo(map).bindPopup("Lodève");
+  L.marker([43.41, 3.698]).addTo(map).bindPopup("Sète");
+  L.marker([43.425, 3.606]).addTo(map).bindPopup("Mèze");
+  L.marker([43.68, 4.133]).addTo(map).bindPopup("Lunel");
+  L.marker([43.5669, 4.1936]).addTo(map).bindPopup("Aigues-Mortes");
+
+</script>
+</body>
+</html>

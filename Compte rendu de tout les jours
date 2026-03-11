@@ -12,3 +12,10 @@ On a réussi a integrer une carte et delimiter la zone accessible
 On a établi les idées générales et la ligne a suivre pour l’avancement du projet
 On a utilisé l’ia pour voir comment on créer un compte pour un futur utilisateur mais c’est pas encore fini
 Notre problème actuellement est que l’on n’arrive pas à déposer notre code sur git hub (le push ne marche pas)
+
+Jour 3:
+Simon absent due à l'oral blanc
+Test de la localisation précise
+Essaie de mettre la location sur telephone (échec pour l'instant)
+Ajout de fenêtre donnant information  sur le niveau du joueur, la distance parcourue, et le nombre de zone prise 
+Ajout d'une ligne indicant le parcours parcourue par l'utilisateurs

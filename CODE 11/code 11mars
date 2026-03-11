@@ -8,6 +8,60 @@
 <style>
   body { margin: 0; }
   #map { height: 100vh; }
+
+  /* --- HUD --- */
+  #hud {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.55);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-family: Arial, sans-serif;
+    width: 220px;
+    backdrop-filter: blur(4px);
+  }
+
+  #profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  #profile img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin-right: 10px;
+  }
+
+  #profile .name {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  #profile .level {
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  #xpBarContainer {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 5px;
+    margin-bottom: 12px;
+  }
+
+  #xpBar {
+    height: 100%;
+    width: 0%;
+    background: #4caf50;
+  }
+
   #startRaceBtn {
     position: fixed;
     left: 50%;
@@ -28,107 +82,180 @@
 </head>
 <body>
 
+<!-- HUD -->
+<div id="hud">
+  <div id="profile">
+    <img src="https://i.imgur.com/4ZQZ4ZC.png">
+    <div>
+      <div class="name">Ralph</div>
+      <div class="level">Niveau <span id="level">1</span></div>
+    </div>
+  </div>
+
+  <div id="xpBarContainer">
+    <div id="xpBar"></div>
+  </div>
+
+  <p><strong>Distance :</strong> <span id="km">0.00</span> km</p>
+  <p><strong>Zones prises :</strong> <span id="zones">0</span></p>
+</div>
+
 <div id="map"></div>
-<button id="startRaceBtn" type="button">Lancer une course</button>
+
+<button id="startRaceBtn">Lancer une course</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // 1. CARTE DE BASE
+  /* -----------------------------
+     1. CARTE
+  ----------------------------- */
   var map = L.map('map').setView([43.611, 3.877], 9);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-  // 2. L'EFFET GRISE VERT
-  var center = [43.611, 3.877];
-  var radius = 50000;
+  /* -----------------------------
+     2. HUD & NIVEAU
+  ----------------------------- */
+  let kmTotal = 0;
+  let lastPos = null;
 
-  var pointsCercle = [];
-  for (var i = 0; i <= 360; i++) {
-    var angle = (i * Math.PI) / 180;
-    var dx = (radius / 111320) * Math.cos(angle);
-    var dy = (radius / (111320 * Math.cos(center[0] * Math.PI / 180))) * Math.sin(angle);
-    pointsCercle.push([center[0] + dx, center[1] + dy]);
+  let level = 1;
+  let xp = 0;
+  let xpMax = 5;   // 5 km par niveau
+
+  let zones = 0;
+
+  function updateHUD() {
+    document.getElementById("km").textContent = kmTotal.toFixed(2);
+    document.getElementById("zones").textContent = zones;
+
+    xp = kmTotal;
+
+    if (xp >= xpMax) {
+      level++;
+      xp = 0;
+      kmTotal = 0;
+      xpMax += 5;
+      document.getElementById("level").textContent = level;
+    }
+
+    let percent = (xp / xpMax) * 100;
+    document.getElementById("xpBar").style.width = percent + "%";
   }
 
-  L.polygon([
-    [[-90, -180], [90, -180], [90, 180], [-90, 180]],
-    pointsCercle
-  ], {
-    color: 'none',
-    fillColor: 'green',
-    fillOpacity: 0.25
-  }).addTo(map);
+  /* -----------------------------
+     3. DISTANCE SIMPLE
+  ----------------------------- */
+  function dist(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const x = (lat2 - lat1) * Math.PI / 180;
+    const y = (lon2 - lon1) * Math.PI / 180;
+    return R * Math.sqrt(x*x + y*y);
+  }
 
-  // 3. CERCLE BLEU
-  var cercle = L.circle([43.611, 3.877], {
-    color: '#0033cc',
-    fillOpacity: 0,
-    radius: 50000
-  }).addTo(map).bindPopup('Cercle autour de Montpellier (~50 km)');
+  /* -----------------------------
+     4. TRAÇÉ & ZONES
+  ----------------------------- */
+  let pathPoints = [];
+  let pathLine = null;
+  let pathColor = null;
 
-  // 4. MARQUEURS VILLES
-  L.marker([43.611, 3.877]).addTo(map).bindPopup('Montpellier');
-  L.marker([43.733, 3.317]).addTo(map).bindPopup('Lodeve');
-  L.marker([43.41, 3.698]).addTo(map).bindPopup('Sete');
-  L.marker([43.425, 3.606]).addTo(map).bindPopup('Meze');
-  L.marker([43.68, 4.133]).addTo(map).bindPopup('Lunel');
-  L.marker([43.5669, 4.1936]).addTo(map).bindPopup('Aigues-Mortes');
+  function randomColor() {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
 
-  // 5. POSITION UTILISATEUR EN TEMPS REEL
+  function isLoopClosed() {
+    if (pathPoints.length < 10) return false;
+    let first = pathPoints[0];
+    let last = pathPoints[pathPoints.length - 1];
+    let d = dist(first.lat, first.lng, last.lat, last.lng);
+    return d < 0.02; // ~20m
+  }
+
+  function fillCapturedZone() {
+    L.polygon(pathPoints, {
+      color: pathColor,
+      fillColor: pathColor,
+      fillOpacity: 0.35
+    }).addTo(map);
+
+    zones++;
+    updateHUD();
+  }
+
+  /* -----------------------------
+     5. POSITION UTILISATEUR
+  ----------------------------- */
   var userMarker = null;
-  var hasCenteredOnUser = false;
-  var raceStarted = false;
+  var centered = false;
+  var running = false;
 
-  document.getElementById('startRaceBtn').addEventListener('click', function () {
-    if (!raceStarted) {
-      raceStarted = true;
-      this.textContent = 'Arreter la course';
-      this.style.background = '#c62828';
+  document.getElementById("startRaceBtn").onclick = function () {
+    running = !running;
+    this.textContent = running ? "Arrêter la course" : "Lancer une course";
+    this.style.background = running ? "#c62828" : "#0b57d0";
+
+    if (running) {
+      pathPoints = [];
+      pathLine = null;
+      pathColor = randomColor();
     } else {
-      raceStarted = false;
-      this.textContent = 'Lancer une course';
-      this.style.background = '#0b57d0';
+      lastPos = null;
     }
-  });
+  };
 
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
-      function (position) {
-        var lat = position.coords.latitude;
-        var lng = position.coords.longitude;
-        var userCoords = [lat, lng];
+      pos => {
+        let lat = pos.coords.latitude;
+        let lng = pos.coords.longitude;
 
         if (!userMarker) {
-          userMarker = L.circleMarker(userCoords, {
+          userMarker = L.circleMarker([lat, lng], {
             radius: 8,
-            color: '#ffffff',
-            weight: 2,
-            fillColor: '#2d7ff9',
-            fillOpacity: 1
-          }).addTo(map).bindPopup('Votre position');
+            color: "white",
+            fillColor: "#2d7ff9",
+            fillOpacity: 1,
+            weight: 2
+          }).addTo(map);
         } else {
-          userMarker.setLatLng(userCoords);
+          userMarker.setLatLng([lat, lng]);
         }
 
-        if (!hasCenteredOnUser) {
-          map.setView(userCoords, 18);
-          hasCenteredOnUser = true;
+        if (!centered) {
+          map.setView([lat, lng], 18);
+          centered = true;
+        }
+
+        if (running) {
+          if (lastPos) {
+            kmTotal += dist(lastPos.lat, lastPos.lng, lat, lng);
+          }
+          lastPos = { lat, lng };
+          updateHUD();
+
+          // Tracé
+          pathPoints.push({ lat, lng });
+
+          if (!pathLine) {
+            pathLine = L.polyline([], { color: pathColor, weight: 4 }).addTo(map);
+          }
+          pathLine.setLatLngs(pathPoints);
+
+          if (isLoopClosed()) {
+            fillCapturedZone();
+            pathPoints = [];
+            pathLine = null;
+            pathColor = randomColor();
+          }
         }
       },
-      function () {
-        alert('Impossible de recuperer votre position.');
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 1000,
-        timeout: 10000
-      }
+      () => alert("Impossible de récupérer la position."),
+      { enableHighAccuracy: true }
     );
   } else {
-    alert("La geolocalisation n'est pas supportee par ce navigateur.");
+    alert("La géolocalisation n'est pas supportée par ce navigateur.");
   }
 </script>
 </body>

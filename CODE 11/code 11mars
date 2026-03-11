@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Cercle Montpellier - Running</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+  body { margin: 0; }
+  #map { height: 100vh; }
+  #startRaceBtn {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 999px;
+    background: #0b57d0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<button id="startRaceBtn" type="button">Lancer une course</button>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // 1. CARTE DE BASE
+  var map = L.map('map').setView([43.611, 3.877], 9);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // 2. L'EFFET GRISE VERT
+  var center = [43.611, 3.877];
+  var radius = 50000;
+
+  var pointsCercle = [];
+  for (var i = 0; i <= 360; i++) {
+    var angle = (i * Math.PI) / 180;
+    var dx = (radius / 111320) * Math.cos(angle);
+    var dy = (radius / (111320 * Math.cos(center[0] * Math.PI / 180))) * Math.sin(angle);
+    pointsCercle.push([center[0] + dx, center[1] + dy]);
+  }
+
+  L.polygon([
+    [[-90, -180], [90, -180], [90, 180], [-90, 180]],
+    pointsCercle
+  ], {
+    color: 'none',
+    fillColor: 'green',
+    fillOpacity: 0.25
+  }).addTo(map);
+
+  // 3. CERCLE BLEU
+  var cercle = L.circle([43.611, 3.877], {
+    color: '#0033cc',
+    fillOpacity: 0,
+    radius: 50000
+  }).addTo(map).bindPopup('Cercle autour de Montpellier (~50 km)');
+
+  // 4. MARQUEURS VILLES
+  L.marker([43.611, 3.877]).addTo(map).bindPopup('Montpellier');
+  L.marker([43.733, 3.317]).addTo(map).bindPopup('Lodeve');
+  L.marker([43.41, 3.698]).addTo(map).bindPopup('Sete');
+  L.marker([43.425, 3.606]).addTo(map).bindPopup('Meze');
+  L.marker([43.68, 4.133]).addTo(map).bindPopup('Lunel');
+  L.marker([43.5669, 4.1936]).addTo(map).bindPopup('Aigues-Mortes');
+
+  // 5. POSITION UTILISATEUR EN TEMPS REEL
+  var userMarker = null;
+  var hasCenteredOnUser = false;
+  var raceStarted = false;
+
+  document.getElementById('startRaceBtn').addEventListener('click', function () {
+    if (!raceStarted) {
+      raceStarted = true;
+      this.textContent = 'Arreter la course';
+      this.style.background = '#c62828';
+    } else {
+      raceStarted = false;
+      this.textContent = 'Lancer une course';
+      this.style.background = '#0b57d0';
+    }
+  });
+
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+      function (position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        var userCoords = [lat, lng];
+
+        if (!userMarker) {
+          userMarker = L.circleMarker(userCoords, {
+            radius: 8,
+            color: '#ffffff',
+            weight: 2,
+            fillColor: '#2d7ff9',
+            fillOpacity: 1
+          }).addTo(map).bindPopup('Votre position');
+        } else {
+          userMarker.setLatLng(userCoords);
+        }
+
+        if (!hasCenteredOnUser) {
+          map.setView(userCoords, 18);
+          hasCenteredOnUser = true;
+        }
+      },
+      function () {
+        alert('Impossible de recuperer votre position.');
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 10000
+      }
+    );
+  } else {
+    alert("La geolocalisation n'est pas supportee par ce navigateur.");
+  }
+</script>
+</body>
+</html>

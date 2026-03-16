@@ -19,3 +19,7 @@ Test de la localisation précise
 Essaie de mettre la location sur telephone (échec pour l'instant)
 Ajout de fenêtre donnant information  sur le niveau du joueur, la distance parcourue, et le nombre de zone prise 
 Ajout d'une ligne indicant le parcours parcourue par l'utilisateurs
+
+Jour 4:
+rajout d'un onglet permettant de mettre son nom 
+et tentative de passe le code en https

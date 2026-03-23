@@ -1,262 +1,289 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<meta charset="utf-8" />
-<title>Cercle Montpellier - Running</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Cercle Montpellier - Running</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<style>
-  body { margin: 0; }
-  #map { height: 100vh; }
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background: #1a1a1a; }
+        #map { height: 100vh; width: 100vw; z-index: 1; }
 
-  /* --- HUD --- */
-  #hud {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 2000;
-    background: rgba(0, 0, 0, 0.55);
-    color: white;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-family: Arial, sans-serif;
-    width: 220px;
-    backdrop-filter: blur(4px);
-  }
+        /* --- ÉCRAN D'ACCUEIL --- */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: linear-gradient(135deg, #0b57d0 0%, #062e6f 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
 
-  #profile {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 80%;
+            max-width: 300px;
+        }
 
-  #profile img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px solid white;
-    margin-right: 10px;
-  }
+        #login-screen h1 { margin-bottom: 5px; font-size: 24px; }
+        #login-screen p { margin-bottom: 20px; opacity: 0.8; font-size: 14px; }
 
-  #profile .name {
-    font-weight: bold;
-    font-size: 15px;
-  }
+        #usernameInput {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-  #profile .level {
-    font-size: 13px;
-    opacity: 0.9;
-  }
+        #validerBtn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #ffffff;
+            color: #0b57d0;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-  #xpBarContainer {
-    width: 100%;
-    height: 8px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 5px;
-    margin-bottom: 12px;
-  }
+        #validerBtn:active { transform: scale(0.95); }
 
-  #xpBar {
-    height: 100%;
-    width: 0%;
-    background: #4caf50;
-  }
+        /* --- HUD (Interface de jeu) --- */
+        #hud {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            width: 200px;
+            backdrop-filter: blur(8px);
+            display: none; /* Masqué au départ */
+            pointer-events: none;
+        }
 
-  #startRaceBtn {
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 12px 22px;
-    border: none;
-    border-radius: 999px;
-    background: #0b57d0;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-  }
-</style>
+        #profile { display: flex; align-items: center; margin-bottom: 12px; }
+        #profile img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; margin-right: 12px; }
+        .name { font-weight: bold; font-size: 16px; display: block; }
+        .level-text { font-size: 13px; color: #4caf50; font-weight: bold; }
+
+        #xpBarContainer { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+        #xpBar { height: 100%; width: 0%; background: #4caf50; transition: width 0.5s ease; }
+
+        .stats p { margin: 5px 0; font-size: 14px; }
+
+        /* --- BOUTON ACTION --- */
+        #startRaceBtn {
+            position: fixed;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%);
+            z-index: 2000;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            background: #0b57d0;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: none; /* Masqué au départ */
+        }
+    </style>
 </head>
 <body>
 
-<!-- HUD -->
-<div id="hud">
-  <div id="profile">
-    <img src="https://i.imgur.com/4ZQZ4ZC.png">
-    <div>
-      <div class="name">Ralph</div>
-      <div class="level">Niveau <span id="level">1</span></div>
+<div id="login-screen">
+    <div class="login-card">
+        <h1>Cercle Running</h1>
+        <p>Prêt pour la course ?</p>
+        <input type="text" id="usernameInput" placeholder="Ton pseudo..." autocomplete="off">
+        <button id="validerBtn" onclick="startGame()">C'est parti !</button>
     </div>
-  </div>
+</div>
 
-  <div id="xpBarContainer">
-    <div id="xpBar"></div>
-  </div>
-
-  <p><strong>Distance :</strong> <span id="km">0.00</span> km</p>
-  <p><strong>Zones prises :</strong> <span id="zones">0</span></p>
+<div id="hud">
+    <div id="profile">
+        <img id="userAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix">
+        <div>
+            <span class="name" id="displayName">Joueur</span>
+            <span class="level-text">Niveau <span id="level">1</span></span>
+        </div>
+    </div>
+    <div id="xpBarContainer"><div id="xpBar"></div></div>
+    <div class="stats">
+        <p>🏃 <b>Distance :</b> <span id="km">0.00</span> km</p>
+        <p>📍 <b>Zones :</b> <span id="zones">0</span></p>
+    </div>
 </div>
 
 <div id="map"></div>
-
-<button id="startRaceBtn">Lancer une course</button>
+<button id="startRaceBtn">Lancer la course</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-  /* -----------------------------
-     1. CARTE
-  ----------------------------- */
-  var map = L.map('map').setView([43.611, 3.877], 9);
+    /* -----------------------------
+       1. VARIABLES GLOBALES
+    ----------------------------- */
+    let map, userMarker, pathLine;
+    let running = false;
+    let kmTotal = 0, lastPos = null, zones = 0, level = 1;
+    let pathPoints = [], pathColor = "#0b57d0";
+    let xpMax = 1; // 1km pour passer le niveau 1
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    /* -----------------------------
+       2. INITIALISATION CARTE
+    ----------------------------- */
+    map = L.map('map', { zoomControl: false, attributionControl: false }).setView([43.611, 3.877], 14);
 
-  /* -----------------------------
-     2. HUD & NIVEAU
-  ----------------------------- */
-  let kmTotal = 0;
-  let lastPos = null;
+    // Tiles gratuites et propres (CartoDB Voyager)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
 
-  let level = 1;
-  let xp = 0;
-  let xpMax = 5;   // 5 km par niveau
+    /* -----------------------------
+       3. GESTION DU NOM & LANCEMENT
+    ----------------------------- */
+    function startGame() {
+        const input = document.getElementById('usernameInput');
+        const name = input.value.trim();
 
-  let zones = 0;
-
-  function updateHUD() {
-    document.getElementById("km").textContent = kmTotal.toFixed(2);
-    document.getElementById("zones").textContent = zones;
-
-    xp = kmTotal;
-
-    if (xp >= xpMax) {
-      level++;
-      xp = 0;
-      kmTotal = 0;
-      xpMax += 5;
-      document.getElementById("level").textContent = level;
-    }
-
-    let percent = (xp / xpMax) * 100;
-    document.getElementById("xpBar").style.width = percent + "%";
-  }
-
-  /* -----------------------------
-     3. DISTANCE SIMPLE
-  ----------------------------- */
-  function dist(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const x = (lat2 - lat1) * Math.PI / 180;
-    const y = (lon2 - lon1) * Math.PI / 180;
-    return R * Math.sqrt(x*x + y*y);
-  }
-
-  /* -----------------------------
-     4. TRAÇÉ & ZONES
-  ----------------------------- */
-  let pathPoints = [];
-  let pathLine = null;
-  let pathColor = null;
-
-  function randomColor() {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  }
-
-  function isLoopClosed() {
-    if (pathPoints.length < 10) return false;
-    let first = pathPoints[0];
-    let last = pathPoints[pathPoints.length - 1];
-    let d = dist(first.lat, first.lng, last.lat, last.lng);
-    return d < 0.02; // ~20m
-  }
-
-  function fillCapturedZone() {
-    L.polygon(pathPoints, {
-      color: pathColor,
-      fillColor: pathColor,
-      fillOpacity: 0.35
-    }).addTo(map);
-
-    zones++;
-    updateHUD();
-  }
-
-  /* -----------------------------
-     5. POSITION UTILISATEUR
-  ----------------------------- */
-  var userMarker = null;
-  var centered = false;
-  var running = false;
-
-  document.getElementById("startRaceBtn").onclick = function () {
-    running = !running;
-    this.textContent = running ? "Arrêter la course" : "Lancer une course";
-    this.style.background = running ? "#c62828" : "#0b57d0";
-
-    if (running) {
-      pathPoints = [];
-      pathLine = null;
-      pathColor = randomColor();
-    } else {
-      lastPos = null;
-    }
-  };
-
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(
-      pos => {
-        let lat = pos.coords.latitude;
-        let lng = pos.coords.longitude;
-
-        if (!userMarker) {
-          userMarker = L.circleMarker([lat, lng], {
-            radius: 8,
-            color: "white",
-            fillColor: "#2d7ff9",
-            fillOpacity: 1,
-            weight: 2
-          }).addTo(map);
-        } else {
-          userMarker.setLatLng([lat, lng]);
+        if (name === "") {
+            alert("Veuillez entrer un nom !");
+            return;
         }
 
-        if (!centered) {
-          map.setView([lat, lng], 18);
-          centered = true;
-        }
+        // Personnalisation
+        document.getElementById('displayName').textContent = name;
+        document.getElementById('userAvatar').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
+
+        // Transition visuelle
+        const loginScreen = document.getElementById('login-screen');
+        loginScreen.style.transition = "opacity 0.5s ease";
+        loginScreen.style.opacity = "0";
+        
+        setTimeout(() => {
+            loginScreen.style.display = "none";
+            document.getElementById('hud').style.display = "block";
+            document.getElementById('startRaceBtn').style.display = "block";
+            map.invalidateSize(); // Rafraîchit la carte
+        }, 500);
+
+        initGeolocation();
+    }
+
+    /* -----------------------------
+       4. LOGIQUE DE COURSE
+    ----------------------------- */
+    document.getElementById("startRaceBtn").onclick = function() {
+        running = !running;
+        this.textContent = running ? "Arrêter la course" : "Lancer la course";
+        this.style.background = running ? "#c62828" : "#0b57d0";
 
         if (running) {
-          if (lastPos) {
-            kmTotal += dist(lastPos.lat, lastPos.lng, lat, lng);
-          }
-          lastPos = { lat, lng };
-          updateHUD();
-
-          // Tracé
-          pathPoints.push({ lat, lng });
-
-          if (!pathLine) {
-            pathLine = L.polyline([], { color: pathColor, weight: 4 }).addTo(map);
-          }
-          pathLine.setLatLngs(pathPoints);
-
-          if (isLoopClosed()) {
-            fillCapturedZone();
             pathPoints = [];
-            pathLine = null;
-            pathColor = randomColor();
-          }
+            if (pathLine) map.removeLayer(pathLine);
+            pathColor = `hsl(${Math.random() * 360}, 75%, 50%)`;
+            pathLine = L.polyline([], { color: pathColor, weight: 6, opacity: 0.8 }).addTo(map);
+        } else {
+            lastPos = null;
         }
-      },
-      () => alert("Impossible de récupérer la position."),
-      { enableHighAccuracy: true }
-    );
-  } else {
-    alert("La géolocalisation n'est pas supportée par ce navigateur.");
-  }
+    };
+
+    function updateHUD() {
+        document.getElementById("km").textContent = kmTotal.toFixed(2);
+        document.getElementById("zones").textContent = zones;
+        
+        // Progression niveau
+        if (kmTotal >= xpMax) {
+            level++;
+            xpMax += 2; 
+            document.getElementById("level").textContent = level;
+        }
+        let percent = (kmTotal / xpMax) * 100;
+        document.getElementById("xpBar").style.width = Math.min(percent, 100) + "%";
+    }
+
+    // Calcul de distance (Haversine)
+    function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2-lat1) * Math.PI / 180;
+        const dLon = (lon2-lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    /* -----------------------------
+       5. GÉOLOCALISATION EN TEMPS RÉEL
+    ----------------------------- */
+    function initGeolocation() {
+        if (!navigator.geolocation) {
+            alert("GPS non supporté.");
+            return;
+        }
+
+        navigator.geolocation.watchPosition(pos => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            // Marqueur joueur
+            if (!userMarker) {
+                userMarker = L.circleMarker([lat, lng], {
+                    radius: 10, color: "#fff", fillColor: "#2d7ff9", fillOpacity: 1, weight: 3
+                }).addTo(map);
+                map.setView([lat, lng], 17);
+            } else {
+                userMarker.setLatLng([lat, lng]);
+            }
+
+            if (running) {
+                if (lastPos) {
+                    const d = getDistance(lastPos.lat, lastPos.lng, lat, lng);
+                    if (d > 0.003) { // Seuil de 3 mètres pour filtrer le bruit GPS
+                        kmTotal += d;
+                        updateHUD();
+                    }
+                }
+                lastPos = { lat, lng };
+                pathPoints.push([lat, lng]);
+                pathLine.setLatLngs(pathPoints);
+
+                // Détection de zone fermée (boucle)
+                if (pathPoints.length > 15) {
+                    const start = pathPoints[0];
+                    const dToStart = getDistance(start[0], start[1], lat, lng);
+                    if (dToStart < 0.02) { // 20 mètres du point de départ
+                        L.polygon(pathPoints, { color: pathColor, fillOpacity: 0.3 }).addTo(map);
+                        zones++;
+                        pathPoints = [];
+                        pathLine = L.polyline([], { color: pathColor, weight: 6 }).addTo(map);
+                        updateHUD();
+                    }
+                }
+            }
+        }, err => {
+            console.error("Erreur GPS:", err);
+        }, { enableHighAccuracy: true });
+    }
 </script>
 </body>
 </html>

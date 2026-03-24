@@ -3,156 +3,118 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cercle Montpellier - Connexion</title>
+    <title>Color Run - Montpellier</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <style>
-        :root { --blue: #0b57d0; --green: #4caf50; --dark: #121212; --glass: rgba(30, 30, 30, 0.9); }
+        :root { --blue: #0b57d0; --green: #4caf50; --pink: #ff007f; --dark: #121212; --glass: rgba(25, 25, 25, 0.95); }
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; overflow: hidden; }
         #map { height: 100vh; width: 100vw; z-index: 1; }
 
-        /* --- ÉCRAN D'AUTH --- */
-        #auth-screen {
-            position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, #0b57d0 0%, #000 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .auth-card {
-            background: var(--glass); padding: 30px; border-radius: 25px;
-            width: 85%; max-width: 350px; text-align: center; backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .auth-card h1 { margin-top: 0; font-size: 26px; }
-        input { 
-            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #444; 
-            background: #222; color: white; margin-bottom: 15px; box-sizing: border-box;
-        }
-        .btn-main { 
-            width: 100%; padding: 14px; border-radius: 12px; border: none; 
-            background: var(--blue); color: white; font-weight: bold; cursor: pointer; font-size: 16px;
-        }
-        .auth-toggle { margin-top: 15px; font-size: 13px; color: #aaa; cursor: pointer; text-decoration: underline; }
+        /* --- AUTH --- */
+        #auth-screen { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, var(--pink) 0%, #000 100%); display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: var(--glass); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; }
+        .btn-main { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--pink); color: white; font-weight: bold; cursor: pointer; }
 
         /* --- HUD & NAV --- */
-        #hud {
-            position: fixed; top: 15px; left: 15px; z-index: 1000;
-            background: var(--glass); padding: 12px; border-radius: 15px; display: none;
-        }
-        #navbar {
-            position: fixed; bottom: 0; width: 100%; height: 65px; 
-            background: var(--glass); z-index: 2000; display: none; justify-content: space-around; align-items: center;
-        }
-        .nav-item { font-size: 22px; cursor: pointer; opacity: 0.5; }
-        .nav-item.active { opacity: 1; color: var(--blue); }
+        #hud { position: fixed; top: 15px; left: 15px; z-index: 1000; background: var(--glass); padding: 12px 18px; border-radius: 18px; display: none; border: 1px solid rgba(255,255,255,0.1); }
+        .hud-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--pink); margin-right: 12px; }
+        #navbar { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--glass); z-index: 2000; display: none; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-item { font-size: 24px; cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .nav-item.active { opacity: 1; color: var(--pink); transform: scale(1.2); }
 
         /* --- MODALS --- */
-        .modal {
-            position: fixed; inset: 0; background: var(--dark); z-index: 3000;
-            display: none; flex-direction: column; padding: 25px;
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        #startRaceBtn {
-            position: fixed; left: 50%; bottom: 85px; transform: translateX(-50%);
-            z-index: 1500; padding: 15px 40px; border: none; border-radius: 50px;
-            background: var(--blue); color: white; font-weight: bold; display: none;
-        }
+        .modal { position: fixed; inset: 0; background: var(--dark); z-index: 3000; display: none; flex-direction: column; padding: 25px; overflow-y: auto; }
+        .pass-item { background: #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; align-items: center; border: 1px solid #333; }
+        .pass-item.unlocked { border-color: var(--pink); background: rgba(255, 0, 127, 0.1); }
+        .lvl-tag { background: var(--pink); padding: 5px 10px; border-radius: 8px; margin-right: 15px; font-weight: bold; font-size: 11px; }
+
+        #startRaceBtn { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); z-index: 1500; padding: 16px 45px; border: none; border-radius: 50px; background: var(--pink); color: white; font-weight: bold; display: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
-    <div class="auth-card" id="login-form">
-        <h1 id="auth-title">Créer un compte</h1>
-        <p id="auth-desc" style="font-size: 14px; opacity: 0.7; margin-bottom: 20px;">Rejoins le Cercle Running de Montpellier</p>
-        
-        <input type="text" id="user-name" placeholder="Pseudo">
-        <input type="email" id="user-email" placeholder="Adresse Email">
-        <input type="password" id="user-pass" placeholder="Mot de passe">
-        
-        <button class="btn-main" onclick="handleAuth()">S'inscrire</button>
-        <p class="auth-toggle" onclick="toggleAuth()">Déjà un compte ? Se connecter</p>
+    <div class="auth-card">
+        <h1>COLOR <span>RUN</span></h1>
+        <div id="login-inputs">
+            <input type="text" id="user-name" placeholder="Pseudo">
+            <input type="email" id="user-email" placeholder="Email">
+            <input type="password" id="user-pass" placeholder="Mot de passe">
+            <button class="btn-main" onclick="handleAuth()">C'est parti !</button>
+            <p style="margin-top:15px; font-size:12px; opacity:0.6; cursor:pointer;" onclick="toggleAuthMode()" id="toggle-btn">Déjà inscrit ? Connexion</p>
+        </div>
     </div>
 </div>
 
 <div id="hud">
-    <div style="display: flex; align-items: center;">
-        <img id="hudAvatar" src="" style="width:40px; border-radius:50%; margin-right:10px; border:2px solid var(--green);">
+    <div style="display: flex; align-items: center;" onclick="openModal('modal-profil')">
+        <img id="hudAvatar" class="hud-avatar" src="">
         <div>
-            <div id="hudName" style="font-weight:bold; font-size:14px;">Joueur</div>
-            <div style="font-size:11px; color:var(--green);">Niveau <span id="hudLvl">1</span></div>
+            <span style="font-weight:bold; font-size:15px;" id="displayName">Joueur</span>
+            <span style="font-size:10px; color:var(--pink); display:block; font-weight:900;" id="displayRank">NÉOPHYTE</span>
+            <div style="font-size:10px; opacity:0.6;">KM: <span id="displayKm">0.00</span> | ZONES: <span id="displayZones">0</span></div>
         </div>
     </div>
 </div>
 
-<button id="startRaceBtn">Lancer la course</button>
+<button id="startRaceBtn">LANCER COLOR RUN</button>
 
 <div id="navbar">
-    <div class="nav-item active" onclick="closeModals()">🗺️</div>
-    <div class="nav-item" onclick="openModal('modal-pass')">🏆</div>
-    <div class="nav-item" onclick="openModal('modal-profil')">👤</div>
-</div>
-
-<div id="modal-profil" class="modal">
-    <div class="modal-header"><h2>Mon Compte</h2><span onclick="closeModals()" style="font-size:30px;">&times;</span></div>
-    <div style="text-align:center;">
-        <img id="profAvatar" src="" style="width:100px; border-radius:50%; border:3px solid var(--blue);">
-        <h3 id="profName">Pseudo</h3>
-        <p id="profEmail" style="opacity:0.6;">email@test.com</p>
-        <hr style="border:0.5px solid #333; margin:20px 0;">
-        <button class="btn-main" style="background:#444;" onclick="logout()">Se déconnecter</button>
-    </div>
+    <div class="nav-item active" id="nav-map" onclick="closeModals()">🗺️</div>
+    <div class="nav-item" id="nav-pass" onclick="openModal('modal-pass')">🏆</div>
+    <div class="nav-item" id="nav-profil" onclick="openModal('modal-profil')">👤</div>
 </div>
 
 <div id="modal-pass" class="modal">
-    <div class="modal-header"><h2>Run Pass</h2><span onclick="closeModals()" style="font-size:30px;">&times;</span></div>
-    <div id="pass-content">
-        </div>
+    <div style="display:flex; justify-content:space-between;"><h2>Color Pass</h2><span onclick="closeModals()" style="font-size:35px;">&times;</span></div>
+    <div id="pass-list"></div>
+</div>
+
+<div id="modal-profil" class="modal">
+    <div style="display:flex; justify-content:space-between;"><h2>Mon Profil</h2><span onclick="closeModals()" style="font-size:35px;">&times;</span></div>
+    <div style="text-align:center;">
+        <img id="profAvatar" src="" style="width:100px; border-radius:50%; border:3px solid var(--pink);">
+        <h2 id="profName">Pseudo</h2>
+        <p id="profEmail" style="opacity:0.5;"></p>
+        <button class="btn-main" style="background:#444; margin-top:20px;" onclick="location.reload()">Déconnexion</button>
+    </div>
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let map, userMarker, pathLine, running = false;
-    let isLoginMode = false;
-    
-    // Notre "Base de données" locale
-    let currentUser = null;
+    let map, userMarker, pathLine, running = false, isLoginMode = false, currentUser = null;
+    let currentPathColor = "#ff007f";
 
-    function toggleAuth() {
+    const TITLES = [
+        { lvl: 1, name: "NÉOPHYTE DU PEYROU" },
+        { lvl: 3, name: "MARCHEUR DU LEZ" },
+        { lvl: 5, name: "TROTTEUR D'ANTIGONE" },
+        { lvl: 10, name: "SPRINTEUR DE LA COMÉDIE" },
+        { lvl: 25, name: "MAÎTRE DE MONTPELLIER" }
+    ];
+
+    function toggleAuthMode() {
         isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').textContent = isLoginMode ? "Connexion" : "Créer un compte";
         document.getElementById('user-name').style.display = isLoginMode ? "none" : "block";
-        document.querySelector('.btn-main').textContent = isLoginMode ? "Se connecter" : "S'inscrire";
-        document.querySelector('.auth-toggle').textContent = isLoginMode ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter";
+        document.getElementById('btn-auth-action').textContent = isLoginMode ? "Se connecter" : "C'est parti !";
     }
 
     function handleAuth() {
         const email = document.getElementById('user-email').value;
-        const name = document.getElementById('user-name').value;
         const pass = document.getElementById('user-pass').value;
-
-        if(!email || !pass) return alert("Remplis tous les champs !");
+        const name = document.getElementById('user-name').value;
 
         if(isLoginMode) {
-            // Simulation connexion
-            let savedUser = JSON.parse(localStorage.getItem(`user_${email}`));
-            if(savedUser && savedUser.pass === pass) {
-                currentUser = savedUser;
-            } else {
-                return alert("Email ou mot de passe incorrect.");
-            }
+            let saved = JSON.parse(localStorage.getItem(`cr_${email}`));
+            if(saved && saved.pass === pass) currentUser = saved;
+            else return alert("Erreur");
         } else {
-            // Simulation inscription
-            if(!name) return alert("Il nous faut un pseudo !");
-            currentUser = { email, name, pass, level: 1, kmTotal: 0 };
-            localStorage.setItem(`user_${email}`, JSON.stringify(currentUser));
+            currentUser = { email, name, pass, level: 1, kmTotal: 0, zones: 0 };
+            localStorage.setItem(`cr_${email}`, JSON.stringify(currentUser));
         }
-
-        loginSuccess();
-    }
-
-    function loginSuccess() {
         document.getElementById('auth-screen').style.display = "none";
         document.getElementById('hud').style.display = "block";
         document.getElementById('navbar').style.display = "flex";
@@ -162,39 +124,63 @@
     }
 
     function updateUI() {
-        if(!currentUser) return;
-        document.getElementById('hudName').textContent = currentUser.name;
+        let title = TITLES[0].name;
+        TITLES.forEach(t => { if(currentUser.level >= t.lvl) title = t.name; });
+        document.getElementById('displayName').textContent = currentUser.name;
+        document.getElementById('displayRank').textContent = title;
+        document.getElementById('displayKm').textContent = currentUser.kmTotal.toFixed(2);
+        document.getElementById('displayZones').textContent = currentUser.zones;
         document.getElementById('profName').textContent = currentUser.name;
         document.getElementById('profEmail').textContent = currentUser.email;
-        document.getElementById('hudLvl').textContent = currentUser.level;
-        let avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.name}`;
-        document.getElementById('hudAvatar').src = avatar;
-        document.getElementById('profAvatar').src = avatar;
-        
-        // Sauvegarde auto
-        localStorage.setItem(`user_${currentUser.email}`, JSON.stringify(currentUser));
+        let av = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.name}`;
+        document.getElementById('hudAvatar').src = av;
+        document.getElementById('profAvatar').src = av;
+        renderPass();
+        localStorage.setItem(`cr_${currentUser.email}`, JSON.stringify(currentUser));
+    }
+
+    function renderPass() {
+        const list = document.getElementById('pass-list');
+        list.innerHTML = "";
+        TITLES.forEach(t => {
+            let ok = currentUser.level >= t.lvl;
+            list.innerHTML += `<div class="pass-item ${ok?'unlocked':''}">
+                <div class="lvl-tag">LVL ${t.lvl}</div><div style="flex:1">${t.name}</div><div>${ok?'✅':'🔒'}</div>
+            </div>`;
+        });
     }
 
     function initMap() {
-        if(map) return;
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([43.611, 3.877], 15);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
         
         navigator.geolocation.watchPosition(pos => {
             const { latitude: lat, longitude: lng } = pos.coords;
             if(!userMarker) {
-                userMarker = L.circleMarker([lat, lng], {radius:8, color:"#fff", fillColor:"#0b57d0", fillOpacity:1}).addTo(map);
+                userMarker = L.circleMarker([lat, lng], {radius:10, color:"#fff", fillColor: "var(--pink)", fillOpacity:1, weight:3}).addTo(map);
                 map.setView([lat, lng], 17);
-            } else { userMarker.setLatLng([lat, lng]); }
+            } else userMarker.setLatLng([lat, lng]);
 
             if(running) {
-                let points = pathLine.getLatLngs();
-                if(points.length > 0) {
-                    let d = map.distance(points[points.length-1], [lat, lng]) / 1000;
+                let pts = pathLine.getLatLngs();
+                if(pts.length > 0) {
+                    let last = pts[pts.length-1];
+                    let d = map.distance(last, [lat, lng]) / 1000;
                     if(d > 0.005) {
                         currentUser.kmTotal += d;
                         currentUser.level = Math.floor(currentUser.kmTotal) + 1;
                         updateUI();
+                        
+                        // --- DÉTECTION DES ZONES ---
+                        if(pts.length > 10) {
+                            let distToStart = map.distance(pts[0], [lat, lng]);
+                            if(distToStart < 20) { // Si on revient à moins de 20m du début
+                                L.polygon(pts, {color: currentPathColor, fillOpacity: 0.3}).addTo(map);
+                                currentUser.zones++;
+                                pathLine.setLatLngs([]); // Reset le tracé actuel
+                                updateUI();
+                            }
+                        }
                     }
                 }
                 pathLine.addLatLng([lat, lng]);
@@ -204,15 +190,25 @@
 
     document.getElementById('startRaceBtn').onclick = function() {
         running = !running;
-        this.textContent = running ? "Arrêter" : "Lancer la course";
-        this.style.background = running ? "red" : "var(--blue)";
-        if(running) pathLine = L.polyline([], {color:'var(--blue)', weight:5}).addTo(map);
+        this.textContent = running ? "ARRÊTER" : "LANCER COLOR RUN";
+        this.style.background = running ? "red" : "var(--pink)";
+        if(running) {
+            currentPathColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+            pathLine = L.polyline([], {color: currentPathColor, weight: 6}).addTo(map);
+        }
     };
 
-    function openModal(id) { closeModals(); document.getElementById(id).style.display = "flex"; }
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
-    function logout() { location.reload(); }
-    function logout() { location.reload(); }
+    function openModal(id) { 
+        closeModals(); document.getElementById(id).style.display = "flex"; 
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        if(id === 'modal-pass') document.getElementById('nav-pass').classList.add('active');
+        if(id === 'modal-profil') document.getElementById('nav-profil').classList.add('active');
+    }
+    function closeModals() { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); 
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('nav-map').classList.add('active');
+    }
 </script>
 </body>
 </html>

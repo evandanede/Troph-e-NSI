@@ -14,11 +14,17 @@ MBOM Ralph (@Ralphmmob) : Responsable [ex: Interface Graphique & Assets]
 🛠️ Aspects Techniques (Spécificités NSI)
 Cette section est cruciale pour le jury. Expliquez comment vous avez utilisé le programme de NSI :
 
-Nous avons utilisé le language Python pour créer notre application.
-Structures de données : Utilisation de dictionnaires pour gérer l'inventaire, de listes de listes pour la grille du jeu, etc.
-Concepts mobilisés : - Programmation Orientée Objet (ex: classe Player et Enemy).
-Récursivité (ex: pour l'algorithme de parcours de labyrinthe).
-Gestion de fichiers (ex: sauvegarde des scores en JSON).
+Nous avons utilisé le langage JavaScript pour créer notre application, avec du HTML pour la structure et du CSS pour le design.
+
+Structures de données :
+Utilisation d’objets (comme currentUser) pour stocker les informations du joueur, et de tableaux (comme TITLES) pour gérer les niveaux et les récompenses.
+
+Concepts mobilisés :
+
+Programmation événementielle (ex : boutons qui déclenchent des actions comme LANCER COLOR RUN).
+Géolocalisation (pour suivre la position du joueur en temps réel).
+Stockage local (localStorage) pour sauvegarder les données du joueur.
+Manipulation du DOM (pour mettre à jour l’interface comme le pseudo, les km, etc.).
 🚀 Installation et Utilisation
 Expliquez comment tester votre projet :
 Le test du projet à été effectué en transférant le code sur téléphone pour avoir une utilisation qui se rapproche le plus de la vraie expérience utilisateur que nous voulons créer

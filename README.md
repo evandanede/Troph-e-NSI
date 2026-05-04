@@ -34,6 +34,8 @@ Lancement : python main.py
  Notre Camarade Simon Hervet chargé de la publication de groupe et de la vidéo de présentation n'a pas pu le faire.
 📸 Captures d'écran
 Ajoutez ici une ou deux images de votre projet en action. Aperçu du projet
+<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/892e2783-6702-4f09-bc59-1bfb2d4509c3" />
+
 
 📜 Licence
 Le code du projet est placé sous licence libre GPL v3+ et le texte sous licence Creative Commons CC By-Sa.

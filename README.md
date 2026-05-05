@@ -1,6 +1,7 @@
 🚀 COLOR RUN 
 Vidéo de présentation : https://drive.google.com/file/d/1wg_-2Batpm_Z5E5I7bymtrNZW2E2KfFN/view?usp=drive_link
-📝 Description
+📝 Description :
+
 L'idée est de créer une application faisant un mélange entre une application de course et un jeux. L'utilisateur cours, marche dans la ville de Montpellier et son agglomération. Le but du sportif va d'être d'obtenir le plus de "zone" "périmetre" "espace" dans la ville. Pour ça il faut que le coureur fasse le tour de la zone qu'il veut gagner (ou à peu près en fonction de l'organisation des espaces) et sur l'application il sera alors propriétaire de cette zone qui sera entouré d'une certaine couleur. Le but est de gagner un maximum d'espace de la ville mais attention, si un autre coureur (coureur2) passe sur la zone remporter par un autre(coureur1), celle ci appartient désormais à coureur2. L'objectif est de motiver les utilisateurs à faire une activité physique et de découvrir aussi de nouveaux endroits ou paysages jamais explorer.
 
 Nous avons choisi ce sujet car nous aimons tous dans notre groupe le sport et les jeux donc cette idée nous permets de rassembler deux de nos centres d'interêts utiles pour tout le monde.

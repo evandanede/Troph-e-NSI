@@ -37,7 +37,7 @@ Lancement : python main.py
  Jalon 3 : Interface graphique finale.
  Jalon 4 : Vidéo de démonstration et tests unitaires.
 
- Notre Camarade Simon Hervet chargé de la publication de groupe et de la vidéo de présentation n'a pas pu le faire.
+ Notre Camarade Simon Hervet chargé de la publication de groupe et de la vidéo de présentation n'a pas pu le faire. Notre vidéo de présentation est donc sans la partie de Simon Hervet, chargé de la présentation du code de l'application
 📸 Captures d'écran
 Ajoutez ici une ou deux images de votre projet en action. Aperçu du projet
 <img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/892e2783-6702-4f09-bc59-1bfb2d4509c3" />
